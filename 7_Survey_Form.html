@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SURVEY FORM</title>
+    <style>
+        body {
+            font-family: fangsong;
+            background-color: antiquewhite;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        .containerr {
+            display: flex;
+            flex:1;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="date"],
+        select {
+            width: 96%;
+            padding: 8px;
+            margin-top: 4px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="checkbox"] {
+            margin-top: 6px;
+        }
+        button {
+            background-color: #0074d9;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .emmob {
+            height: 27px;
+            width: 98%;
+        }
+        .gender-checkbox {
+            margin-right: 10px;
+        }
+        .label-text {
+            font-size: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align:center;">Survey Form</h1>
+        <form id="surveyForm">
+            <div class="form-group">
+                <label for="firstName" class="label-text">First Name:</label>
+                <input pattern="[A-Za-z]+" placeholder="Enter First Name" type="text" id="firstName" name="firstName" required>
+            </div>
+            <div class="form-group">
+                <label for="lastName" class="label-text">Last Name:</label>
+                <input pattern="[A-Za-z]+" placeholder="Enter Last Name" type="text" id="lastName" required>
+            </div>
+            <div class="form-group">
+                <label for="dob" class="label-text">Date of Birth:</label>
+                <input type="date" id="dob" required>
+            </div>
+            <div class="form-group">
+                <label for="country" class="label-text">Select Country:</label>
+            
+                <select style="width:99%;" id="countrySelect" required>
+
+                    <select id="countrySelect">
+                    </select>
+                    
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="label-text">Email:</label>
+                <input class="emmob" placeholder="Enter Email" type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="mobile" class="label-text">Mobile Number:</label>
+                <input class="emmob" pattern="[0-9]{10}" placeholder="Enter Mobile Number" type="tel" id="mobile" required>
+            </div>
+            <div class="form-group">
+                <label for="profession" class="label-text">Profession:</label>
+                <input placeholder="Enter Profession" type="text" id="profession" required>
+            </div>
+            <div class="form-group">
+                <label  class="label-text">Gender:</label>
+                <div class="containerr">
+                    <label for="male">Male</label>
+                    <input type="radio" id="male" name="gender" value="Male" class="gender-checkbox">
+                    
+                    <label for="female">Female</label>
+                    <input type="radio" id="female" name="gender" value="Female" class="gender-checkbox">
+                </div>
+            </div>
+            <button type="submit">Submit</button>
+            <button type="button" onclick="resetForm()">Reset</button>
+        </form>
+    </div>
+                <!-- Submit button -->
+    <script>
+        document.getElementById('surveyForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            if (validateForm()) {
+                showPopup();
+            }
+        });
+
+        function validateForm() {
+            return true;
+        }
+        function showPopup() {
+            const formData = {
+                'First Name': document.getElementById('firstName').value,
+                'Last Name': document.getElementById('lastName').value,
+                'Date of Birth': document.getElementById('dob').value,
+                'Country': document.getElementById('countrySelect').value,
+                'Gender': Array.from(document.querySelectorAll('input[name="gender"]:checked')).map(input => input.value).join(', '),
+                'Profession': document.getElementById('profession').value,
+                'Email': document.getElementById('email').value,
+                'Mobile Number': document.getElementById('mobile').value
+            };
+
+            const popupContent = Object.entries(formData).map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`).join('');
+
+            const popup = document.createElement('div');
+            popup.innerHTML = popupContent;
+            popup.style.position = 'fixed';
+            popup.style.top = '50%';
+            popup.style.left = '50%';
+            popup.style.transform = 'translate(-50%, -50%)';
+            popup.style.backgroundColor = '#fff';
+            popup.style.padding = '20px';
+            popup.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.2)';
+            popup.style.zIndex = '9999';
+
+            const closeButton = document.createElement('button');
+            closeButton.innerText = 'Close';
+            closeButton.style.backgroundColor = '#0074d9';
+            closeButton.style.color = '#fff';
+            closeButton.style.padding = '10px 20px';
+            closeButton.style.border = 'none';
+            closeButton.style.cursor = 'pointer';
+            closeButton.style.marginTop = '10px';
+            closeButton.addEventListener('click', function() {
+                document.body.removeChild(popup);
+                resetForm();
+            });
+
+            popup.appendChild(closeButton);
+            document.body.appendChild(popup);
+        }
+
+        function resetForm() {
+            document.getElementById('surveyForm').reset();
+        }
+    </script>
+    <script>
+        // Fetch the country data from the JSON file
+    fetch('https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-abbreviation.json')
+        .then(response => response.json())
+        .then(data => {
+            const countrySelect = document.getElementById('countrySelect');
+
+            // Create a "Select Country" option
+            const selectCountryOption = document.createElement('option');
+            selectCountryOption.value = '';
+            selectCountryOption.textContent = 'Select Country';
+            countrySelect.appendChild(selectCountryOption);
+
+            // Iterate through the data and add options to the select element
+            data.forEach(country => {
+                const option = document.createElement('option');
+                option.value = country.abbreviation;
+                option.textContent = country.country;
+                countrySelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching country data:', error);
+        });
+    </script>
+
+    <!-- Gender Check box -->
+    <script>
+    function validateForm() {
+
+    const genderCheckboxes = document.querySelectorAll('.gender-checkbox');
+    let isGenderChecked = false;
+
+    genderCheckboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            isGenderChecked = true;
+        }
+    });
+
+    if (!isGenderChecked) {
+        alert('Please select a gender.');
+        return false;
+    }
+
+    return true;
+}
+    </script>
+    
+</body>
+</html>
